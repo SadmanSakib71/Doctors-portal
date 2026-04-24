@@ -5,7 +5,7 @@ function App() {
     <div className="min-h-screen  bg-linear-to-br from-black via-slate-900 to-zinc-900 p-4 sm:p-8">
       <header className="mx-auto mt-10 w-full max-w-xl rounded-3xl border border-white/10 bg-white/10 p-6 shadow-2xl shadow-black/40 backdrop-blur-xl sm:p-8">
         <h1 className="text-2xl font-bold text-white sm:text-3xl">
-          Welcome to Doctor Portal
+          Welcome to Doctor's Portal
         </h1>
 
         <p className="mt-2 text-sm text-slate-300 sm:text-base">
