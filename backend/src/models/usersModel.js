@@ -19,15 +19,26 @@ const userSchema = new mongoose.Schema(
       default: "",
     },
 
+    firstName: {
+      type: String,
+      default: "",
+    },
+
+    lastName: {
+      type: String,
+      default: "",
+    },
+
     role: {
       type: String,
       enum: ["admin", "doctor", "patient"],
       default: "patient",
     },
 
-    name: {
+    doctorStatus: {
       type: String,
-      default: "",
+      enum: ["none", "pending", "approved", "rejected"],
+      default: "none",
     },
 
     image: {
