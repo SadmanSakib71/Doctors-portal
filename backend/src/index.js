@@ -27,7 +27,7 @@ mongoose
   });
 
 // routing setup
-app.use("/UserRole", userRoleRouter);
+app.use("/createUser", userRoleRouter);
 
 app.listen(port, () => {
   console.log(`[backend] http://localhost:${port}`);
