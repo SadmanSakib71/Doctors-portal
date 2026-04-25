@@ -14,11 +14,6 @@ const userSchema = new mongoose.Schema(
       unique: true,
     },
 
-    phone: {
-      type: String,
-      default: "",
-    },
-
     firstName: {
       type: String,
       default: "",

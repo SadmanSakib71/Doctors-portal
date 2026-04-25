@@ -6,7 +6,7 @@ const router = express.Router();
 //post user role
 router.post("", async (req, res) => {
   try {
-    const { clerkId, email, phone, firstName, lastName, image } = req.body;
+    const { clerkId, email, firstName, lastName, image } = req.body;
 
     let user = await User.findOne({ clerkId });
 
@@ -14,7 +14,6 @@ router.post("", async (req, res) => {
       user = await User.create({
         clerkId,
         email,
-        phone,
         firstName,
         lastName,
         image,

@@ -1,6 +1,56 @@
-import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/react";
+import {
+  Show,
+  SignInButton,
+  SignUpButton,
+  useAuth,
+  UserButton,
+  useUser,
+} from "@clerk/react";
+import { useEffect, useRef } from "react";
+import post from "./apiCall/post";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
+  const hasSynced = useRef(false);
+  const { user } = useUser();
+  const { getToken } = useAuth();
+
+  console.log(user, getToken);
+
+  useEffect(() => {
+    if (!user || hasSynced.current) return;
+    hasSynced.current = true;
+
+    const syncUser = async () => {
+      try {
+        const token = await getToken();
+
+        const body = {
+          clerkId: user.id,
+          email: user.primaryEmailAddress?.emailAddress,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        };
+
+        await post("createUser", body, token);
+
+        toast.success("User Added Successfully");
+
+        // console.log("User synced successfully:", response);
+      } catch (error) {
+        hasSynced.current = false;
+        toast.error(
+          error?.response?.data?.message ||
+            error.message ||
+            "Something went wrong",
+        );
+      }
+    };
+
+    syncUser();
+  }, [user]);
+
   return (
     <div className="min-h-screen  bg-linear-to-br from-black via-slate-900 to-zinc-900 p-4 sm:p-8">
       <header className="mx-auto mt-10 w-full max-w-xl rounded-3xl border border-white/10 bg-white/10 p-6 shadow-2xl shadow-black/40 backdrop-blur-xl sm:p-8">
@@ -40,6 +90,7 @@ function App() {
           </div>
         </Show>
       </header>
+      <ToastContainer position="top-right" autoClose={2500} />
     </div>
   );
 }
