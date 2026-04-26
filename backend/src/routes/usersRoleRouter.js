@@ -3,6 +3,7 @@ import User from "../models/usersModel.js";
 
 const router = express.Router();
 
+//this api will call after any user successfully create their account...no frontend api call here
 router.post("/clerk", async (req, res) => {
   try {
     const event = req.body;
@@ -23,12 +24,10 @@ router.post("/clerk", async (req, res) => {
           lastName: last_name,
           image: image_url,
         });
-
-        console.log("✅ User created from webhook");
       }
     }
 
-    return res.status(200).json({ message: "ok" });
+    return res.status(200).json({ message: " User created" });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
