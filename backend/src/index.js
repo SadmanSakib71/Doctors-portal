@@ -2,7 +2,8 @@ import cors from "cors";
 import "dotenv/config";
 import express from "express";
 import mongoose from "mongoose";
-import userRoleRouter from "./routes/usersCreateRouter.js";
+import userCreateRouter from "./routes/usersCreateRouter.js";
+import userRouter from "./routes/userRouter.js";
 
 const app = express();
 const port = Number(process.env.PORT) || 5000;
@@ -27,7 +28,8 @@ mongoose
   });
 
 // routing setup
-app.use("/api/webhooks", userRoleRouter);
+app.use("/api/webhooks", userCreateRouter);
+app.use("/user", userRouter);
 
 app.listen(port, () => {
   console.log(`[backend] http://localhost:${port}`);

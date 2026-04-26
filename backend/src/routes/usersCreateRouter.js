@@ -33,4 +33,14 @@ router.post("/clerk", async (req, res) => {
   }
 });
 
+// GET user by clerkId
+router.get("/:clerkId", async (req, res) => {
+  try {
+    const user = await User.find({ clerkId: req.params.clerkId });
+    res.status(200).json({ result: users, message: "User get successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 export default router;
