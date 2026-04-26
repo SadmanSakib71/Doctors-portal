@@ -3,28 +3,34 @@ import User from "../models/usersModel.js";
 
 const router = express.Router();
 
-//post user role
-router.post("", async (req, res) => {
+router.post("/clerk", async (req, res) => {
   try {
-    const { clerkId, email, firstName, lastName, image } = req.body;
+    const event = req.body;
 
-    let user = await User.findOne({ clerkId });
+    if (event.type === "user.created") {
+      const { id, email_addresses, first_name, last_name, image_url } =
+        event.data;
 
-    if (!user) {
-      user = await User.create({
-        clerkId,
-        email,
-        firstName,
-        lastName,
-        image,
-      });
-    } else {
-      res.status(400).json({ error: "User is already available" });
+      const email = email_addresses?.[0]?.email_address;
+
+      const existingUser = await User.findOne({ clerkId: id });
+
+      if (!existingUser) {
+        await User.create({
+          clerkId: id,
+          email,
+          firstName: first_name,
+          lastName: last_name,
+          image: image_url,
+        });
+
+        console.log("✅ User created from webhook");
+      }
     }
 
-    res.status(200).json("user added successfully");
+    return res.status(200).json({ message: "ok" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: err.message });
   }
 });
 

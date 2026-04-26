@@ -16,40 +16,42 @@ function App() {
   const { user } = useUser();
   const { getToken } = useAuth();
 
-  console.log(user, getToken);
+  // useEffect(() => {
+  //   if (!user || hasSynced.current) return;
+  //   hasSynced.current = true;
 
-  useEffect(() => {
-    if (!user || hasSynced.current) return;
-    hasSynced.current = true;
+  //   const syncUser = async () => {
+  //     try {
+  //       const token = await getToken();
 
-    const syncUser = async () => {
-      try {
-        const token = await getToken();
+  //       const body = {
+  //         clerkId: user.id,
+  //         email: user.primaryEmailAddress?.emailAddress,
+  //         firstName: user.firstName,
+  //         lastName: user.lastName,
+  //       };
 
-        const body = {
-          clerkId: user.id,
-          email: user.primaryEmailAddress?.emailAddress,
-          firstName: user.firstName,
-          lastName: user.lastName,
-        };
+  //       const result = await post("createUser", body, token);
 
-        await post("createUser", body, token);
+  //       console.log(result, "result");
 
-        toast.success("User Added Successfully");
+  //       toast.success("User Added Successfully");
 
-        // console.log("User synced successfully:", response);
-      } catch (error) {
-        hasSynced.current = false;
-        toast.error(
-          error?.response?.data?.message ||
-            error.message ||
-            "Something went wrong",
-        );
-      }
-    };
+  //       // console.log("User synced successfully:", response);
+  //     } catch (error) {
+  //       console.log(error, error);
 
-    syncUser();
-  }, [user]);
+  //       hasSynced.current = false;
+  //       toast.error(
+  //         error?.response?.data?.message ||
+  //           error.message ||
+  //           "Something went wrong",
+  //       );
+  //     }
+  //   };
+
+  //   syncUser();
+  // }, [user]);
 
   return (
     <div className="min-h-screen  bg-linear-to-br from-black via-slate-900 to-zinc-900 p-4 sm:p-8">
