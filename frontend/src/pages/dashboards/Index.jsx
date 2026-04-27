@@ -9,7 +9,8 @@ const Index = () => {
   const { user, isLoaded } = useUser();
   const { getToken } = useAuth();
 
-  const [userData, setUserData] = useState([]);
+  const [userData, setUserData] = useState(null);
+  console.log(userData, "userData");
 
   useEffect(() => {
     if (!isLoaded || !user?.id) return;
@@ -18,7 +19,7 @@ const Index = () => {
       try {
         const token = await getToken();
         const res = await get(`user/${user.id}`, token);
-        setUserData(res?.data?.data);
+        setUserData(res?.data?.data?.[0]);
       } catch (err) {
         console.error(err);
       }
@@ -29,17 +30,9 @@ const Index = () => {
 
   return (
     <>
-      {userData.map((user) => (
-        <div key={user.clerkId}>
-          {user.role === "patient" ? (
-            <PatientDashboard />
-          ) : user?.role === "admin" ? (
-            <AdminDashboard />
-          ) : user?.role === "doctor" ? (
-            <DoctorsDashboard />
-          ) : null}
-        </div>
-      ))}
+      {userData?.role === "patient" && <PatientDashboard />}
+      {userData?.role === "admin" && <AdminDashboard />}
+      {userData?.role === "doctor" && <DoctorsDashboard />}
     </>
   );
 };
