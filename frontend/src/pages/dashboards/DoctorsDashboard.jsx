@@ -1,9 +1,10 @@
+import { useClerk } from "@clerk/react";
 import React from "react";
 
 const DoctorsDashboard = () => {
   return (
     <div>
-      <h1>Doctors Dashboard</h1>
+      <h1>Doctors dashboard</h1>
     </div>
   );
 };
