@@ -1,8 +1,7 @@
 import Axios from "axios";
 import { rootUrl } from "./rootUrl";
 
-async function get(url) {
-  const token = localStorage.getItem("authToken");
+async function get(url, token) {
   if (!token) {
     throw new Error("Authorization token not found");
   }
