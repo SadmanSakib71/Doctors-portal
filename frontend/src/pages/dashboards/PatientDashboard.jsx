@@ -69,23 +69,29 @@ const PatientDashboard = () => {
   };
   return (
     <div className="max-w-384 mx-auto min-h-screen bg-[#F8FAFC] relative overflow-hidden font-sans text-slate-800">
-      {/* Notification Toast */}
-      <div className="fixed top-5 right-5 z-50 space-y-2">
-        {notifications.map((n) => (
-          <div
-            key={n.id}
-            className="bg-slate-900 text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 animate-bounce-in"
-          >
-            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-            {n.msg}
-          </div>
-        ))}
-      </div>
-
       <div className="space-y-10 p-6 md:p-10 relative z-10">
         {/* Hero Section */}
-        <header className="flex justify-between items-end">
-          <div className="space-y-3">
+        <div>
+          <div className="space-y-3 flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white shadow-sm border border-slate-100 text-sm font-medium text-slate-500">
+                <Sparkles className="w-4 h-4 text-amber-400" />
+                <span>Monday, April 27</span>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900">
+                Good morning, <span className="text-blue-600">Sarah</span>.
+              </h1>
+            </div>
+
+            <div className="mt-4 md:mt-0 flex items-center gap-3">
+              <img
+                src="https://i.pravatar.cc/100"
+                className="w-12 h-12 rounded-full border"
+              />
+            </div>
+          </div>
+
+          {/* <div className="space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white shadow-sm border border-slate-100 text-sm font-medium text-slate-500">
               <Sparkles className="w-4 h-4 text-amber-400" />
               <span>Monday, April 27</span>
@@ -93,8 +99,8 @@ const PatientDashboard = () => {
             <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900">
               Good morning, <span className="text-blue-600">Sarah</span>.
             </h1>
-          </div>
-        </header>
+          </div> */}
+        </div>
 
         {/* Primary Action Card */}
         <section className="relative group bg-slate-900 rounded-[2.5rem] p-8 md:p-10 text-white shadow-2xl shadow-slate-900/20 overflow-hidden">
