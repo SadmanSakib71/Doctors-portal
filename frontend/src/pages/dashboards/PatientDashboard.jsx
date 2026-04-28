@@ -10,8 +10,15 @@ import {
   X,
   CheckCircle2,
 } from "lucide-react";
+import { useClerk } from "@clerk/react";
 
 const PatientDashboard = () => {
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const { signOut } = useClerk();
+
+  const handleLogout = () => {
+    signOut();
+  };
   // --- STATE MANAGEMENT ---
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -85,21 +92,12 @@ const PatientDashboard = () => {
 
             <div className="mt-4 md:mt-0 flex items-center gap-3">
               <img
+                onClick={() => setShowLogoutConfirm(true)}
                 src="https://i.pravatar.cc/100"
-                className="w-12 h-12 rounded-full border"
+                className="w-12 h-12 rounded-full border cursor-pointer"
               />
             </div>
           </div>
-
-          {/* <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white shadow-sm border border-slate-100 text-sm font-medium text-slate-500">
-              <Sparkles className="w-4 h-4 text-amber-400" />
-              <span>Monday, April 27</span>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900">
-              Good morning, <span className="text-blue-600">Sarah</span>.
-            </h1>
-          </div> */}
         </div>
 
         {/* Primary Action Card */}
@@ -283,6 +281,39 @@ const PatientDashboard = () => {
                 Confirm Booking
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* --- MODAL signOut --- */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setShowLogoutConfirm(false)}
+          />
+
+          <div className="relative bg-white p-6 rounded-2xl shadow-xl w-80">
+            <h2 className="text-lg font-bold mb-3">Sign out?</h2>
+            <p className="text-sm text-slate-500 mb-5">
+              Are you sure you want to Sign out?
+            </p>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="px-4 py-2 rounded-xl bg-slate-100 cursor-pointer"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 rounded-xl bg-red-500 text-white cursor-pointer"
+              >
+                Sign out
+              </button>
+            </div>
           </div>
         </div>
       )}
