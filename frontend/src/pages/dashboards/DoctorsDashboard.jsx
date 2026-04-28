@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Users, Calendar, FileText, DollarSign, Clock } from "lucide-react";
 import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { useClerk } from "@clerk/react";
 
 // Dummy Data
 const stats = [
@@ -63,6 +64,12 @@ const StatusBadge = ({ status }) => {
 };
 
 const DoctorsDashboard = () => {
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const { signOut } = useClerk();
+
+  const handleLogout = () => {
+    signOut();
+  };
   return (
     <div className="max-w-384 mx-auto min-h-screen bg-slate-50 p-6 md:p-10">
       {/* Header */}
@@ -76,8 +83,9 @@ const DoctorsDashboard = () => {
 
         <div className="mt-4 md:mt-0 flex items-center gap-3">
           <img
+            onClick={() => setShowLogoutConfirm(true)}
             src="https://i.pravatar.cc/100"
-            className="w-12 h-12 rounded-full border"
+            className="w-12 h-12 rounded-full border cursor-pointer"
           />
         </div>
       </div>
@@ -157,6 +165,39 @@ const DoctorsDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* --- MODAL signOut --- */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setShowLogoutConfirm(false)}
+          />
+
+          <div className="relative bg-white p-6 rounded-2xl shadow-xl w-80">
+            <h2 className="text-lg font-bold mb-3">Sign out?</h2>
+            <p className="text-sm text-slate-500 mb-5">
+              Are you sure you want to Sign out?
+            </p>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="px-4 py-2 rounded-xl bg-slate-100 cursor-pointer"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 rounded-xl bg-red-500 text-white cursor-pointer"
+              >
+                Sign out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
