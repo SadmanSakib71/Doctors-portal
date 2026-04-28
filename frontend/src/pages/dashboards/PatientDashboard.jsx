@@ -68,7 +68,7 @@ const PatientDashboard = () => {
     addNotification("Appointment booked successfully!");
   };
   return (
-    <div className="min-h-screen bg-[#F8FAFC] relative overflow-hidden font-sans text-slate-800">
+    <div className="max-w-384 mx-auto min-h-screen bg-[#F8FAFC] relative overflow-hidden font-sans text-slate-800">
       {/* Notification Toast */}
       <div className="fixed top-5 right-5 z-50 space-y-2">
         {notifications.map((n) => (
@@ -82,7 +82,7 @@ const PatientDashboard = () => {
         ))}
       </div>
 
-      <div className="max-w-5xl mx-auto space-y-10 p-6 md:p-10 relative z-10">
+      <div className="space-y-10 p-6 md:p-10 relative z-10">
         {/* Hero Section */}
         <header className="flex justify-between items-end">
           <div className="space-y-3">
