@@ -8,7 +8,6 @@ import {
   HeartPulse,
   Droplet,
   X,
-  CheckCircle2,
 } from "lucide-react";
 import { useClerk } from "@clerk/react";
 
