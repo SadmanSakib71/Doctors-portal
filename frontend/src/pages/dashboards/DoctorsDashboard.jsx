@@ -3,7 +3,6 @@ import { Users, Calendar, FileText, DollarSign, Clock } from "lucide-react";
 import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { useClerk } from "@clerk/react";
 
-// Dummy Data
 const stats = [
   {
     title: "Total Patients",
