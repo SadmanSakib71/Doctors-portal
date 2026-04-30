@@ -229,7 +229,7 @@ function Avatar({ initials, colorClass, size = "md" }) {
   const s = size === "sm" ? "w-7 h-7 text-xs" : "w-8 h-8 text-xs";
   return (
     <div
-      className={`${s} rounded-full flex items-center justify-center font-medium flex-shrink-0 ${colorClass}`}
+      className={`${s} rounded-full flex items-center justify-center font-medium shrink-0 ${colorClass}`}
     >
       {initials}
     </div>
@@ -322,7 +322,7 @@ function SidebarContent({ activeNav, setActiveNav, onClose }) {
       {/* Logo row */}
       <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center flex-shrink-0">
+          <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center shrink-0">
             <svg
               className="w-4 h-4 text-white"
               fill="none"
@@ -396,7 +396,7 @@ function SidebarContent({ activeNav, setActiveNav, onClose }) {
       {/* Profile */}
       <div className="px-3 py-3 border-t border-gray-100">
         <div className="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-gray-50 cursor-pointer">
-          <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white text-xs font-medium flex-shrink-0">
+          <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white text-xs font-medium shrink-0">
             AD
           </div>
           <div className="min-w-0">
