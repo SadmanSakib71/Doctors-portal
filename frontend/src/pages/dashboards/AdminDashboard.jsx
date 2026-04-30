@@ -420,7 +420,7 @@ export default function AdminDashboard() {
   return (
     <div className="flex h-screen bg-gray-50 font-sans overflow-hidden">
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex w-56 flex-shrink-0 bg-white border-r border-gray-100 flex-col">
+      <aside className="hidden lg:flex w-56 shrink-0 bg-white border-r border-gray-100 flex-col">
         <SidebarContent activeNav={activeNav} setActiveNav={setActiveNav} />
       </aside>
 
@@ -444,7 +444,7 @@ export default function AdminDashboard() {
       {/* Main */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         {/* Topbar */}
-        <header className="h-14 bg-white border-b border-gray-100 flex items-center justify-between px-4 md:px-6 flex-shrink-0">
+        <header className="h-14 bg-white border-b border-gray-100 flex items-center justify-between px-4 md:px-6 shrink-0">
           <div className="flex items-center gap-3">
             <button
               className="lg:hidden p-1.5 rounded-lg hover:bg-gray-100"
@@ -459,7 +459,7 @@ export default function AdminDashboard() {
           <div className="flex items-center gap-2 md:gap-3">
             <div className="hidden sm:flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-lg px-3 py-1.5 w-36 md:w-48">
               <svg
-                className="w-3.5 h-3.5 text-gray-400 flex-shrink-0"
+                className="w-3.5 h-3.5 text-gray-400 shrink-0"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth={2}
@@ -539,7 +539,7 @@ export default function AdminDashboard() {
                 </button>
               </div>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm min-w-[400px]">
+                <table className="w-full text-sm min-w-100">
                   <thead>
                     <tr>
                       {["Patient", "Age", "Condition", "Status"].map((h) => (
@@ -601,7 +601,7 @@ export default function AdminDashboard() {
                 </button>
               </div>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm min-w-[400px]">
+                <table className="w-full text-sm min-w-100">
                   <thead>
                     <tr>
                       {["Doctor", "Specialty", "Patients", "Status"].map(
@@ -676,7 +676,7 @@ export default function AdminDashboard() {
                   key={i}
                   className={`flex items-center gap-3 px-4 md:px-5 py-3 hover:bg-gray-50 transition-colors ${i < appointments.length - 1 ? "border-b border-gray-100" : ""}`}
                 >
-                  <span className="text-xs text-gray-400 w-16 flex-shrink-0">
+                  <span className="text-xs text-gray-400 w-16 shrink-0">
                     {a.time}
                   </span>
                   <Avatar
@@ -740,7 +740,7 @@ export default function AdminDashboard() {
                       className="flex items-center gap-2 text-xs"
                     >
                       <div
-                        className={`w-2 h-2 rounded-sm ${d.color} flex-shrink-0`}
+                        className={`w-2 h-2 rounded-sm ${d.color} shrink-0`}
                       />
                       <span className="flex-1 text-gray-400 truncate">
                         {d.label}
