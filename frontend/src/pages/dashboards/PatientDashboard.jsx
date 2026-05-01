@@ -1,341 +1,186 @@
 import { useState } from "react";
 import {
-  CalendarPlus,
-  Calendar,
-  Activity,
-  Stethoscope,
-  Sparkles,
-  HeartPulse,
-  Droplet,
-  X,
-} from "lucide-react";
-import { useClerk } from "@clerk/react";
+  PATIENTS,
+  Avatar,
+  Card,
+  CardHeader,
+  DashboardShell,
+  Icon,
+  StatusBadge,
+  getDoctor,
+  getApptsByPatient,
+  getRxByPatient,
+} from "./MedPortalShared";
 
-const PatientDashboard = () => {
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const { signOut } = useClerk();
-
-  const handleLogout = () => {
-    signOut();
-  };
-  // --- STATE MANAGEMENT ---
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [notifications, setNotifications] = useState([]);
-  const [appointments, setAppointments] = useState([
-    {
-      id: 1,
-      doctor: "Dr. Emily Chen",
-      specialty: "Cardiology",
-      date: "Oct 24",
-      time: "10:00 AM",
-    },
-  ]);
-  const [formData, setFormData] = useState({ doctor: "", date: "", time: "" });
-
-  // --- HANDLERS ---
-  const addNotification = (msg) => {
-    const id = Date.now();
-    setNotifications([...notifications, { id, msg }]);
-    setTimeout(
-      () => setNotifications((n) => n.filter((item) => item.id !== id)),
-      3000,
-    );
+export default function PatientDashboard({ onRoleSwitch }) {
+  const [active, setActive] = useState("Overview");
+  const me = PATIENTS[0];
+  const myDoctor = getDoctor(me.doctorId);
+  const myAppts = getApptsByPatient(me.id);
+  const myRx = getRxByPatient(me.id);
+  const accent = {
+    bg: "bg-emerald-500",
+    chip: "bg-emerald-50",
+    text: "text-emerald-600",
+    avatar: "bg-emerald-100 text-emerald-700",
   };
 
-  // 1. Define your available slots (could later come from an API)
-  const timeSlots = [
-    "09:00 AM",
-    "10:30 AM",
-    "01:00 PM",
-    "02:30 PM",
-    "04:00 PM",
-    "09:00 AM",
-    "10:30 AM",
-    "01:00 PM",
-    "02:30 PM",
-    "04:00 PM",
+  const navItems = [
+    { label: "Overview", icon: "grid" },
+    { label: "Appointments", icon: "calendar" },
+    { label: "Prescriptions", icon: "pill" },
+    { label: "My Profile", icon: "user" },
   ];
 
-  const handleBookAppointment = (e) => {
-    e.preventDefault();
-    if (!formData.doctor || !formData.date) return;
-
-    const newApt = {
-      id: appointments.length + 1,
-      doctor: formData.doctor,
-      specialty: "General Medicine",
-      date: formData.date,
-      time: formData.time || "09:00 AM",
-    };
-
-    setAppointments([newApt, ...appointments]);
-    setIsModalOpen(false);
-    setFormData({ doctor: "", date: "", time: "" });
-    addNotification("Appointment booked successfully!");
-  };
-  return (
-    <div className="max-w-384 mx-auto min-h-screen bg-[#F8FAFC] relative overflow-hidden font-sans text-slate-800">
-      <div className="space-y-10 p-6 md:p-10 relative z-10">
-        {/* Hero Section */}
-        <div>
-          <div className="space-y-3 flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white shadow-sm border border-slate-100 text-sm font-medium text-slate-500">
-                <Sparkles className="w-4 h-4 text-amber-400" />
-                <span>Monday, April 27</span>
-              </div>
-              <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900">
-                Good morning, <span className="text-blue-600">Sarah</span>.
-              </h1>
-            </div>
-
-            <div className="mt-4 md:mt-0 flex items-center gap-3">
-              <img
-                onClick={() => setShowLogoutConfirm(true)}
-                src="https://i.pravatar.cc/100"
-                className="w-12 h-12 rounded-full border cursor-pointer"
-              />
-            </div>
+  const pages = {
+    Overview: (
+      <div className="flex flex-col gap-5">
+        <div className="bg-emerald-500 rounded-2xl p-5 md:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <p className="text-emerald-100 text-sm">Good morning 👋</p>
+            <h2 className="text-xl md:text-2xl font-bold text-white mt-0.5">
+              {me.name}
+            </h2>
+            <p className="text-emerald-100 text-sm mt-1">
+              Patient ID: {me.id} · {me.condition}
+            </p>
           </div>
         </div>
 
-        {/* Primary Action Card */}
-        <section className="relative group bg-slate-900 rounded-[2.5rem] p-8 md:p-10 text-white shadow-2xl shadow-slate-900/20 overflow-hidden">
-          <div className="absolute inset-0 bg-linear-to-br from-blue-600 to-indigo-900 opacity-90"></div>
-          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="text-center md:text-left">
-              <h2 className="text-3xl font-bold mb-2">Schedule a Checkup</h2>
-              <p className="text-blue-100 text-lg font-light">
-                Get expert medical advice from our top-rated specialists.
-              </p>
-            </div>
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="bg-white text-indigo-600 hover:scale-105 active:scale-95 font-bold py-4 px-10 rounded-2xl shadow-lg transition-all flex items-center gap-2"
+        <Card>
+          <CardHeader title="Recent Appointments" />
+          {myAppts.map((a, i) => (
+            <div
+              key={a.id}
+              className={`flex items-center gap-4 px-5 py-3.5 hover:bg-gray-50 transition-colors ${i < myAppts.length - 1 ? "border-b border-gray-100" : ""}`}
             >
-              <CalendarPlus className="w-5 h-5" />
-              Book Now
-            </button>
-          </div>
-        </section>
-
-        {/* Dashboard Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Appointments Card with Dynamic Data */}
-          <div className="bg-white rounded-4xl p-8 shadow-sm border border-slate-100">
-            <div className="flex items-center justify-between mb-8">
-              <h3 className="text-xl font-bold flex items-center gap-3">
-                <Calendar className="text-blue-500" /> Upcoming
-              </h3>
-              <span className="bg-blue-50 text-blue-600 text-xs font-bold px-3 py-1 rounded-full">
-                {appointments.length} Total
-              </span>
+              <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                <Icon name="check" cls="w-4 h-4 stroke-blue-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-medium text-gray-800 truncate">
+                  {a.type}
+                </div>
+                <div className="text-xs text-gray-400">{a.date}</div>
+              </div>
+              <StatusBadge status={a.status} />
             </div>
-
-            <div className="space-y-4 max-h-75 overflow-y-auto pr-2 custom-scrollbar">
-              {appointments.length > 0 ? (
-                appointments.map((apt) => (
-                  <div
-                    key={apt.id}
-                    className="group p-5 bg-slate-50 rounded-3xl border border-transparent hover:border-blue-100 hover:bg-white transition-all"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="bg-white p-3 rounded-2xl shadow-sm text-blue-600">
-                          <Stethoscope />
-                        </div>
-                        <div>
-                          <p className="font-bold text-slate-900">
-                            {apt.doctor}
-                          </p>
-                          <p className="text-sm text-slate-500">
-                            {apt.specialty}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right text-sm font-bold text-slate-700">
-                        <div>{apt.date}</div>
-                        <div className="text-blue-500">{apt.time}</div>
-                      </div>
+          ))}
+        </Card>
+      </div>
+    ),
+    Appointments: (
+      <div className="flex flex-col gap-5">
+        <h2 className="text-base font-semibold text-gray-800">
+          My Appointments
+        </h2>
+        <Card>
+          {myAppts.map((a, i) => {
+            const d = getDoctor(a.doctorId);
+            return (
+              <div
+                key={a.id}
+                className={`flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4 hover:bg-gray-50 transition-colors ${i < myAppts.length - 1 ? "border-b border-gray-100" : ""}`}
+              >
+                <div className="flex items-center gap-4 flex-1 min-w-0">
+                  <div className="w-12 h-12 rounded-xl bg-emerald-50 flex flex-col items-center justify-center flex-shrink-0 border border-emerald-100">
+                    <div className="text-base font-bold text-emerald-600 leading-tight">
+                      {a.date.split(" ")[1]}
+                    </div>
+                    <div className="text-xs text-emerald-400">
+                      {a.date.split(" ")[0]}
                     </div>
                   </div>
-                ))
-              ) : (
-                <div className="text-center py-10 text-slate-400">
-                  No appointments found.
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Health Stats */}
-          <div className="bg-white rounded-4xl p-8 shadow-sm border border-slate-100">
-            <h3 className="text-xl font-bold flex items-center gap-3 mb-8">
-              <Activity className="text-teal-500" /> Vital Signs
-            </h3>
-            <div className="grid grid-cols-2 gap-4">
-              <HealthStat
-                icon={<HeartPulse className="text-rose-500" />}
-                label="Heart Rate"
-                value="72"
-                unit="bpm"
-                color="bg-rose-50"
-              />
-              <HealthStat
-                icon={<Droplet className="text-blue-500" />}
-                label="Blood Pressure"
-                value="120/80"
-                unit=""
-                color="bg-blue-50"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* --- MODAL DIALOG --- */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
-          <div
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
-            onClick={() => setIsModalOpen(false)}
-          ></div>
-          <div className="relative bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl p-8 animate-modal-up">
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute right-6 top-6 p-2 hover:bg-slate-100 rounded-full transition-colors"
-            >
-              <X className="w-5 h-5 text-slate-400" />
-            </button>
-            <h2 className="text-2xl font-bold mb-6">Book an Appointment</h2>
-            <form onSubmit={handleBookAppointment} className="space-y-5">
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">
-                  Select Doctor
-                </label>
-                <select
-                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 outline-none focus:ring-2 ring-blue-500/20"
-                  onChange={(e) =>
-                    setFormData({ ...formData, doctor: e.target.value })
-                  }
-                  required
-                >
-                  <option value="">Choose a specialist...</option>
-                  <option value="Dr. James Wilson">
-                    Dr. James Wilson (General)
-                  </option>
-                  <option value="Dr. Sarah Jenkins">
-                    Dr. Sarah Jenkins (Dermatology)
-                  </option>
-                  <option value="Dr. Robert Fox">
-                    Dr. Robert Fox (Neurology)
-                  </option>
-                </select>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">
-                    Date
-                  </label>
-                  <input
-                    type="date"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 outline-none focus:ring-2 ring-blue-500/20"
-                    onChange={(e) =>
-                      setFormData({ ...formData, date: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">
-                    Preferred Time
-                  </label>
-
-                  <div className="relative group">
-                    <select
-                      value={formData.time}
-                      onChange={(e) =>
-                        setFormData({ ...formData, time: e.target.value })
-                      }
-                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 outline-none focus:ring-2 ring-blue-500/20 appearance-none cursor-pointer font-medium text-slate-700 transition-all hover:border-slate-300"
-                      required
-                    >
-                      <option value="" disabled>
-                        Select a time slot...
-                      </option>
-
-                      {timeSlots.map((slot) => (
-                        <option key={slot} value={slot}>
-                          {slot}
-                        </option>
-                      ))}
-                    </select>
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold text-gray-800 truncate">
+                      {a.type}
+                    </div>
+                    <div className="text-xs text-gray-400 mt-0.5">
+                      {d?.name} · {a.day}, {a.time}
+                    </div>
                   </div>
                 </div>
+                <StatusBadge status={a.status} />
               </div>
-              <button
-                type="submit"
-                className="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-all mt-4"
+            );
+          })}
+        </Card>
+      </div>
+    ),
+    Prescriptions: (
+      <div className="flex flex-col gap-5">
+        <h2 className="text-base font-semibold text-gray-800">
+          My Prescriptions
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {myRx.map((rx) => {
+            const d = getDoctor(rx.doctorId);
+            return (
+              <Card
+                key={rx.id}
+                className="p-5 hover:shadow-sm transition-shadow"
               >
-                Confirm Booking
-              </button>
-            </form>
-          </div>
+                <div className="space-y-2 mb-4 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Medicine</span>
+                    <span className="font-semibold text-gray-800">
+                      {rx.name}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Dosage</span>
+                    <span className="font-semibold text-gray-800">
+                      {rx.dose}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Prescribed by</span>
+                    <span className="font-medium text-sky-600">{d?.name}</span>
+                  </div>
+                </div>
+              </Card>
+            );
+          })}
         </div>
-      )}
-
-      {/* --- MODAL signOut --- */}
-      {showLogoutConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div
-            className="absolute inset-0 bg-black/40"
-            onClick={() => setShowLogoutConfirm(false)}
-          />
-
-          <div className="relative bg-white p-6 rounded-2xl shadow-xl w-80">
-            <h2 className="text-lg font-bold mb-3">Sign out?</h2>
-            <p className="text-sm text-slate-500 mb-5">
-              Are you sure you want to Sign out?
-            </p>
-
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setShowLogoutConfirm(false)}
-                className="px-4 py-2 rounded-xl bg-slate-100 cursor-pointer"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 rounded-xl bg-red-500 text-white cursor-pointer"
-              >
-                Sign out
-              </button>
+      </div>
+    ),
+    "My Profile": (
+      <div className="flex flex-col gap-5">
+        <h2 className="text-base font-semibold text-gray-800">My Profile</h2>
+        <Card className="p-5">
+          <div className="flex items-center gap-4 mb-5">
+            <Avatar initials={me.initials} colorClass={me.avatar} size="lg" />
+            <div>
+              <div className="font-bold text-gray-800">{me.name}</div>
+              <div className="text-xs text-gray-400">{me.id}</div>
+              <div className="mt-1">
+                <StatusBadge status={me.status} />
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+          <div className="text-xs text-gray-500">
+            {myDoctor?.name} · {myDoctor?.specialty}
+          </div>
+        </Card>
+      </div>
+    ),
+  };
+
+  return (
+    <DashboardShell
+      navItems={navItems}
+      active={active}
+      setActive={setActive}
+      accent={accent}
+      logo="Patient Portal"
+      profile={{
+        name: me.name,
+        initials: me.initials,
+        sub: `${me.id} · ${me.condition}`,
+      }}
+      onRoleSwitch={onRoleSwitch}
+    >
+      {pages[active]}
+    </DashboardShell>
   );
-};
-
-// Helper Component for Stats
-const HealthStat = ({ icon, label, value, unit, color }) => (
-  <div
-    className={`${color} p-6 rounded-4xl border border-white transition-transform hover:scale-[1.02]`}
-  >
-    <div className="bg-white w-10 h-10 rounded-xl flex items-center justify-center shadow-sm mb-4">
-      {icon}
-    </div>
-    <p className="text-sm font-bold text-slate-500 mb-1">{label}</p>
-    <p className="text-2xl font-black text-slate-900">
-      {value}{" "}
-      <span className="text-xs font-medium text-slate-400 uppercase tracking-widest">
-        {unit}
-      </span>
-    </p>
-  </div>
-);
-
-export default PatientDashboard;
+}

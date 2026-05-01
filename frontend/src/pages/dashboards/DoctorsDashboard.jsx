@@ -1,204 +1,250 @@
-import React, { useState } from "react";
-import { Users, Calendar, FileText, DollarSign, Clock } from "lucide-react";
-import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { useClerk } from "@clerk/react";
+import { useState } from "react";
+import {
+  DOCTORS,
+  PATIENTS,
+  Avatar,
+  Card,
+  CardHeader,
+  DashboardShell,
+  StatusBadge,
+  getApptsByDoctor,
+  getApptsByPatient,
+  getPatient,
+  getRxByDoctor,
+  getRxByPatient,
+} from "./MedPortalShared";
 
-const stats = [
-  {
-    title: "Total Patients",
-    value: 1280,
-    icon: Users,
-    gradient: "from-blue-500 to-blue-300",
-  },
-  {
-    title: "Today’s Appointments",
-    value: 24,
-    icon: Calendar,
-    gradient: "from-green-500 to-green-300",
-  },
-  {
-    title: "Pending Reports",
-    value: 12,
-    icon: FileText,
-    gradient: "from-orange-500 to-orange-300",
-  },
-  {
-    title: "Revenue",
-    value: "$8,450",
-    icon: DollarSign,
-    gradient: "from-purple-500 to-purple-300",
-  },
-];
-
-const appointments = [
-  { name: "John Doe", time: "10:00 AM", status: "Confirmed" },
-  { name: "Sarah Khan", time: "11:30 AM", status: "Pending" },
-  { name: "Michael Lee", time: "01:00 PM", status: "Cancelled" },
-  { name: "Emma Watson", time: "03:00 PM", status: "Confirmed" },
-];
-
-const chartData = [
-  { name: "Mon", visits: 30 },
-  { name: "Tue", visits: 45 },
-  { name: "Wed", visits: 60 },
-  { name: "Thu", visits: 40 },
-  { name: "Fri", visits: 80 },
-  { name: "Sat", visits: 55 },
-  { name: "Sun", visits: 70 },
-];
-
-const StatusBadge = ({ status }) => {
-  const color =
-    status === "Confirmed"
-      ? "bg-green-100 text-green-600"
-      : status === "Pending"
-        ? "bg-yellow-100 text-yellow-600"
-        : "bg-red-100 text-red-600";
-
-  return (
-    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${color}`}>
-      {status}
-    </span>
-  );
-};
-
-const DoctorsDashboard = () => {
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const { signOut } = useClerk();
-
-  const handleLogout = () => {
-    signOut();
+export default function DoctorDashboard({ onRoleSwitch }) {
+  const [active, setActive] = useState("Overview");
+  const me = DOCTORS[0];
+  const myPatients = PATIENTS.filter((p) => p.doctorId === me.id);
+  const myAppts = getApptsByDoctor(me.id);
+  const myRx = getRxByDoctor(me.id);
+  const accent = {
+    bg: "bg-sky-500",
+    chip: "bg-sky-50",
+    text: "text-sky-600",
+    avatar: "bg-sky-100 text-sky-700",
   };
-  return (
-    <div className="max-w-384 mx-auto min-h-screen bg-slate-50 p-6 md:p-10">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-800">
-            Good morning, Dr. Ahmed 👨‍⚕️
-          </h1>
-          <p className="text-slate-500 mt-1">Tuesday, 28 April 2026</p>
-        </div>
 
-        <div className="mt-4 md:mt-0 flex items-center gap-3">
-          <img
-            onClick={() => setShowLogoutConfirm(true)}
-            src="https://i.pravatar.cc/100"
-            className="w-12 h-12 rounded-full border cursor-pointer"
-          />
-        </div>
-      </div>
+  const navItems = [
+    { label: "Overview", icon: "grid" },
+    { label: "My Patients", icon: "users" },
+    { label: "Appointments", icon: "calendar" },
+    { label: "Prescriptions", icon: "pill" },
+  ];
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((item, i) => {
-          const Icon = item.icon;
-          return (
-            <div
-              key={i}
-              className={`p-5 rounded-2xl shadow-sm bg-gradient-to-r ${item.gradient} text-white`}
-            >
-              <div className="flex items-center justify-between">
-                <Icon className="w-6 h-6 opacity-90" />
-                <span className="text-sm opacity-80">Live</span>
-              </div>
-              <h2 className="text-2xl font-bold mt-4">{item.value}</h2>
-              <p className="text-sm opacity-90">{item.title}</p>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
-        {/* Appointments */}
-        <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-slate-800 mb-4">
-            Today’s Appointments
-          </h2>
-
-          <div className="space-y-4">
-            {appointments.map((a, i) => (
+  const pages = {
+    Overview: (
+      <div className="flex flex-col gap-5">
+        <div className="bg-sky-500 rounded-2xl p-5 md:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <p className="text-sky-100 text-sm">Welcome back 👋</p>
+            <h2 className="text-xl md:text-2xl font-bold text-white mt-0.5">
+              {me.name}
+            </h2>
+            <p className="text-sky-100 text-sm mt-1">
+              {me.specialty} · {me.experience} experience
+            </p>
+          </div>
+          <div className="flex gap-3">
+            {[
+              { val: myPatients.length, lbl: "Patients" },
+              {
+                val: myAppts.filter((a) => a.status === "Confirmed").length,
+                lbl: "Today",
+              },
+              { val: `★ ${me.rating}`, lbl: "Rating" },
+            ].map((s) => (
               <div
-                key={i}
-                className="flex items-center justify-between p-4 bg-slate-50 rounded-xl"
+                key={s.lbl}
+                className="bg-white/20 rounded-xl px-4 py-3 text-center"
               >
-                <div>
-                  <p className="font-medium text-slate-800">{a.name}</p>
-                  <p className="text-sm text-slate-500 flex items-center gap-1">
-                    <Clock className="w-4 h-4" /> {a.time}
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <StatusBadge status={a.status} />
-
-                  <button className="text-sm px-3 py-1 rounded-lg bg-blue-600 text-white">
-                    View
-                  </button>
-                </div>
+                <div className="text-white font-bold text-lg">{s.val}</div>
+                <div className="text-sky-100 text-xs">{s.lbl}</div>
               </div>
             ))}
           </div>
         </div>
-
-        {/* Analytics */}
-        <div className="bg-white rounded-2xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-slate-800 mb-4">
-            Patient Visits
-          </h2>
-
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
-                <XAxis dataKey="name" />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="visits"
-                  stroke="#3b82f6"
-                  strokeWidth={3}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+      </div>
+    ),
+    "My Patients": (
+      <div className="flex flex-col gap-5">
+        <h2 className="text-base font-semibold text-gray-800">My Patients</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {myPatients.map((p) => {
+            const appts = getApptsByPatient(p.id).filter(
+              (a) => a.doctorId === me.id,
+            );
+            const rx = getRxByPatient(p.id).filter((r) => r.doctorId === me.id);
+            return (
+              <Card
+                key={p.id}
+                className="p-5 hover:shadow-sm transition-shadow"
+              >
+                <div className="flex items-start gap-3 mb-4">
+                  <Avatar
+                    initials={p.initials}
+                    colorClass={p.avatar}
+                    size="lg"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-gray-800 truncate">
+                      {p.name}
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      {p.id} · Age {p.age} · {p.blood}
+                    </div>
+                    <div className="mt-1.5 flex gap-2 flex-wrap">
+                      <StatusBadge status={p.status} />
+                      <span className="inline-flex px-2 py-0.5 rounded-full text-xs bg-sky-50 text-sky-700">
+                        {p.condition}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-2 pt-3 border-t border-gray-100">
+                  <div className="flex-1 text-center py-1.5 rounded-lg bg-sky-50 text-sky-600 text-xs font-medium">
+                    {appts.length} Appointment{appts.length !== 1 ? "s" : ""}
+                  </div>
+                  <div className="flex-1 text-center py-1.5 rounded-lg bg-emerald-50 text-emerald-600 text-xs font-medium">
+                    {rx.length} Prescription{rx.length !== 1 ? "s" : ""}
+                  </div>
+                </div>
+              </Card>
+            );
+          })}
         </div>
       </div>
-
-      {/* --- MODAL signOut --- */}
-      {showLogoutConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div
-            className="absolute inset-0 bg-black/40"
-            onClick={() => setShowLogoutConfirm(false)}
-          />
-
-          <div className="relative bg-white p-6 rounded-2xl shadow-xl w-80">
-            <h2 className="text-lg font-bold mb-3">Sign out?</h2>
-            <p className="text-sm text-slate-500 mb-5">
-              Are you sure you want to Sign out?
-            </p>
-
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setShowLogoutConfirm(false)}
-                className="px-4 py-2 rounded-xl bg-slate-100 cursor-pointer"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 rounded-xl bg-red-500 text-white cursor-pointer"
-              >
-                Sign out
-              </button>
-            </div>
+    ),
+    Appointments: (
+      <div className="flex flex-col gap-5">
+        <h2 className="text-base font-semibold text-gray-800">
+          My Appointments
+        </h2>
+        <Card>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[480px]">
+              <thead>
+                <tr className="border-b border-gray-100">
+                  {["Patient", "Type", "Date", "Time", "Status"].map((h) => (
+                    <th
+                      key={h}
+                      className="text-left text-xs text-gray-400 font-medium uppercase tracking-wider px-5 py-3"
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {myAppts.map((a) => {
+                  const p = getPatient(a.patientId);
+                  return (
+                    <tr
+                      key={a.id}
+                      className="border-b border-gray-50 hover:bg-gray-50 transition-colors last:border-0"
+                    >
+                      <td className="px-5 py-3">
+                        <div className="flex items-center gap-2">
+                          <Avatar
+                            initials={p.initials}
+                            colorClass={p.avatar}
+                            size="sm"
+                          />
+                          <div>
+                            <div className="text-xs font-semibold text-gray-800 whitespace-nowrap">
+                              {p.name}
+                            </div>
+                            <div className="text-xs text-gray-400">
+                              {p.condition}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-5 py-3 text-xs text-gray-600 whitespace-nowrap">
+                        {a.type}
+                      </td>
+                      <td className="px-5 py-3 text-xs text-gray-600 whitespace-nowrap">
+                        {a.date}
+                      </td>
+                      <td className="px-5 py-3 text-xs text-gray-600">
+                        {a.time}
+                      </td>
+                      <td className="px-5 py-3">
+                        <StatusBadge status={a.status} />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
+        </Card>
+      </div>
+    ),
+    Prescriptions: (
+      <div className="flex flex-col gap-5">
+        <h2 className="text-base font-semibold text-gray-800">
+          Prescriptions I Issued
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {myRx.map((rx) => {
+            const p = getPatient(rx.patientId);
+            return (
+              <Card
+                key={rx.id}
+                className="p-5 hover:shadow-sm transition-shadow"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Avatar
+                      initials={p.initials}
+                      colorClass={p.avatar}
+                      size="sm"
+                    />
+                    <div>
+                      <div className="text-sm font-semibold text-gray-800">
+                        {p.name}
+                      </div>
+                      <div className="text-xs text-gray-400">{p.id}</div>
+                    </div>
+                  </div>
+                  <span className="text-xs text-gray-400">{rx.issued}</span>
+                </div>
+                <div className="bg-sky-50 rounded-xl p-3 mb-3">
+                  <div className="text-sm font-bold text-sky-700">
+                    {rx.name}
+                  </div>
+                  <div className="text-xs text-sky-500 mt-0.5">
+                    {rx.dose} · {rx.freq}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-gray-400">Refill by</span>
+                  <span className="font-medium text-amber-600">
+                    {rx.refill}
+                  </span>
+                </div>
+              </Card>
+            );
+          })}
         </div>
-      )}
-    </div>
-  );
-};
+      </div>
+    ),
+  };
 
-export default DoctorsDashboard;
+  return (
+    <DashboardShell
+      navItems={navItems}
+      active={active}
+      setActive={setActive}
+      accent={accent}
+      logo="Doctor Portal"
+      profile={{ name: me.name, initials: me.initials, sub: me.specialty }}
+      onRoleSwitch={onRoleSwitch}
+    >
+      {pages[active]}
+    </DashboardShell>
+  );
+}
