@@ -108,7 +108,7 @@ export default function PatientDashboard({ onRoleSwitch }) {
       <div className="flex flex-col gap-5">
         <div className="bg-emerald-500 rounded-2xl p-5 md:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <p className="text-emerald-100 text-sm">Good morning 👋</p>
+            <p className="text-emerald-100 text-sm">Good morning Doctors👋</p>
             <h2 className="text-xl md:text-2xl font-bold text-white mt-0.5">
               {me.name}
             </h2>
@@ -126,7 +126,11 @@ export default function PatientDashboard({ onRoleSwitch }) {
         </div>
 
         <Card>
-          <CardHeader title="Recent Appointments" action={openBookModal} actionLabel="Book" />
+          <CardHeader
+            title="Recent Appointments"
+            action={openBookModal}
+            actionLabel="Book"
+          />
           {myAppts.map((a, i) => (
             <div
               key={a.id}
