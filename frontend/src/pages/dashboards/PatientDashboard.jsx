@@ -98,7 +98,7 @@ export default function PatientDashboard({ onRoleSwitch }) {
 
   const navItems = [
     { label: "Overview", icon: "grid" },
-    { label: "Appointments", icon: "calendar" },
+    { label: "Appointments", icon: "calendarr" },
     { label: "Prescriptions", icon: "pill" },
     { label: "My Profile", icon: "user" },
   ];
