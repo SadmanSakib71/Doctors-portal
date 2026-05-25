@@ -20,7 +20,7 @@ const Index = () => {
         const res = await get(`user/${user.id}`, token);
         setUserData(res?.data?.data?.[0]);
       } catch (err) {
-        console.error(err);
+        console.error(err, "show the error here");
       }
     };
 
