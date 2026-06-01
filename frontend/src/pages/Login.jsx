@@ -30,7 +30,7 @@ const Login = () => {
         </h1>
 
         <p className="mt-2 text-sm text-slate-300 sm:text-base">
-          Continue securely to manage appointments and patient workflow.
+          Continue securely to manage appointments and patient workflow...
         </p>
 
         <Show when="signed-out">
