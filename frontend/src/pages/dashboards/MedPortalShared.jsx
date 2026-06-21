@@ -531,7 +531,7 @@ export function RoleSelector({ onSelect }) {
             <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
           </svg>
         </div>
-        <h1 className="text-2xl font-bold text-gray-800">MedPortal</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Med Portal</h1>
         <p className="text-gray-400 text-sm mt-1">
           Choose your role to continue
         </p>
